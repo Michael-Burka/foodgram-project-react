@@ -12,6 +12,10 @@ class Recipe(models.Model):
         verbose_name="Время приготовления в минутах"
     )
 
+    @property
+    def favorites_count(self):
+        return self.favorited_by.count()
+
 
 class Tag(models.Model):
     name = models.CharField(
@@ -50,3 +54,13 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name="Количество")
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+            'auth.User', on_delete=models.CASCADE, related_name='favorites'
+    )
+    recipe = models.ForeignKey(
+            Recipe, on_delete=models.CASCADE, related_name='favorited_by'
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
