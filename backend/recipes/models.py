@@ -16,6 +16,10 @@ class Recipe(models.Model):
     def favorites_count(self):
         return self.favorited_by.count()
 
+    class Meta:
+        verbose_name = "Рецепт"
+        verbose_name_plural = "Рецепты"
+
 
 class Tag(models.Model):
     name = models.CharField(
@@ -29,11 +33,19 @@ class Tag(models.Model):
             Recipe, through="RecipeTag", related_name="tags"
     )
 
+    class Meta:
+        verbose_name = "Тег"
+        verbose_name_plural = "Теги"
+
 
 class Unit(models.Model):
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Единица измерения"
     )
+
+    class Meta:
+        verbose_name = "Единица измерения"
+        verbose_name_plural = "Единицы измерения"
 
 
 class Ingredient(models.Model):
@@ -44,10 +56,18 @@ class Ingredient(models.Model):
         Unit, on_delete=models.CASCADE, verbose_name="Единица измерения"
     )
 
+    class Meta:
+        verbose_name = "Ингредиент"
+        verbose_name_plural = "Ингредиенты"
+
 
 class RecipeTag(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Тег рецепта"
+        verbose_name_plural = "Теги рецептов"
 
 
 class RecipeIngredient(models.Model):
@@ -55,23 +75,57 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name="Количество")
 
+    class Meta:
+        verbose_name = "Ингредиент рецепта"
+        verbose_name_plural = "Ингредиенты рецептов"
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(
-            'auth.User', on_delete=models.CASCADE, related_name='favorites'
+        "auth.User", on_delete=models.CASCADE, related_name="favorites"
     )
     recipe = models.ForeignKey(
-            Recipe, on_delete=models.CASCADE, related_name='favorited_by'
+        Recipe, on_delete=models.CASCADE, related_name="favorited_by"
     )
     added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Избранное"
+        verbose_name_plural = "Избранные"
 
 
 class ShoppingList(models.Model):
     user = models.ForeignKey(
-            'auth.User',
-            on_delete=models.CASCADE, related_name='shopping_lists'
+        "auth.User", on_delete=models.CASCADE, related_name="shopping_lists"
     )
     recipe = models.ForeignKey(
-            Recipe, on_delete=models.CASCADE, related_name='in_shopping_lists'
+        Recipe, on_delete=models.CASCADE, related_name="in_shopping_lists"
     )
     added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Список покупок"
+        verbose_name_plural = "Списки покупок"
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="Подписчик",
+    )
+    author = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="subscribers",
+        verbose_name="Автор",
+    )
+    subscribed_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата подписки"
+    )
+
+    class Meta:
+        unique_together = ("user", "author")
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
