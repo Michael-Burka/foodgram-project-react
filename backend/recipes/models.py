@@ -64,3 +64,14 @@ class Favorite(models.Model):
             Recipe, on_delete=models.CASCADE, related_name='favorited_by'
     )
     added_at = models.DateTimeField(auto_now_add=True)
+
+
+class ShoppingList(models.Model):
+    user = models.ForeignKey(
+            'auth.User',
+            on_delete=models.CASCADE, related_name='shopping_lists'
+    )
+    recipe = models.ForeignKey(
+            Recipe, on_delete=models.CASCADE, related_name='in_shopping_lists'
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
