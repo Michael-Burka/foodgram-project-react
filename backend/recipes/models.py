@@ -7,7 +7,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(max_length=255, verbose_name="Название")
     image = models.ImageField(upload_to="recipes/", verbose_name="Картинка")
-    description = models.TextField(verbose_name="Текстовое описание")
+    text = models.TextField(verbose_name="Текстовое описание")
     cooking_time = models.PositiveIntegerField(
         verbose_name="Время приготовления в минутах"
     )
@@ -23,12 +23,18 @@ class Recipe(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
-            max_length=100, unique=True, verbose_name="Название"
+            max_length=200, unique=True, verbose_name="Название"
     )
     color_code = models.CharField(
         max_length=7, unique=True, verbose_name="Цветовой код"
     )
-    slug = models.SlugField(max_length=100, unique=True, verbose_name="Slug")
+    slug = models.SlugField(
+        max_length=200,
+        verbose_name="Слаг",
+        unique=True,
+        help_text="Введите слаг",
+        db_index=True,
+    )
     recipes = models.ManyToManyField(
             Recipe, through="RecipeTag", related_name="tags"
     )
@@ -38,22 +44,12 @@ class Tag(models.Model):
         verbose_name_plural = "Теги"
 
 
-class Unit(models.Model):
-    name = models.CharField(
-        max_length=50, unique=True, verbose_name="Единица измерения"
-    )
-
-    class Meta:
-        verbose_name = "Единица измерения"
-        verbose_name_plural = "Единицы измерения"
-
-
 class Ingredient(models.Model):
     name = models.CharField(
-            max_length=255, unique=True, verbose_name="Название"
+        max_length=200, unique=True, verbose_name="Название"
     )
-    unit = models.ForeignKey(
-        Unit, on_delete=models.CASCADE, verbose_name="Единица измерения"
+    measurement_unit = models.CharField(
+        max_length=200, verbose_name="Единица измерения"
     )
 
     class Meta:
