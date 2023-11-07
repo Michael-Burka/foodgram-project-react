@@ -30,9 +30,9 @@ class CustomUserViewSet(UserViewSet):
                 'errors': 'Вы уже подписаны на данного пользователя'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        follow = Subscription.objects.create(user=user, author=author)
+        subscription = Subscription.objects.create(user=user, author=author)
         serializer = SubscriptionSerializer(
-            follow, context={'request': request}
+            subscription, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -44,9 +44,9 @@ class CustomUserViewSet(UserViewSet):
             return Response({
                 'errors': 'Вы не можете отписываться от самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
-        follow = Subscription.objects.filter(user=user, author=author)
-        if follow.exists():
-            follow.delete()
+        subscription = Subscription.objects.filter(user=user, author=author)
+        if subscription.exists():
+            subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response({

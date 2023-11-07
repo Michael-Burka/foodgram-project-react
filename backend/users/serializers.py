@@ -12,7 +12,8 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())])
     username = serializers.CharField(
-        validators=[UniqueValidator(queryset=User.objects.all())])
+      validators=[UniqueValidator(queryset=User.objects.all())], max_length=150
+    )
 
     class Meta:
         model = User
