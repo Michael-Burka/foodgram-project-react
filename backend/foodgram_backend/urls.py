@@ -3,6 +3,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('foodgram_api.urls')),
+    path('', include('users.urls', namespace='foodgram_user')),
 ]
 

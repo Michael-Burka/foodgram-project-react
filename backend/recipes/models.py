@@ -103,25 +103,3 @@ class ShoppingList(models.Model):
         verbose_name = "Список покупок"
         verbose_name_plural = "Списки покупок"
 
-
-class Subscription(models.Model):
-    user = models.ForeignKey(
-        "auth.User",
-        on_delete=models.CASCADE,
-        related_name="subscriptions",
-        verbose_name="Подписчик",
-    )
-    author = models.ForeignKey(
-        "auth.User",
-        on_delete=models.CASCADE,
-        related_name="subscribers",
-        verbose_name="Автор",
-    )
-    subscribed_at = models.DateTimeField(
-        auto_now_add=True, verbose_name="Дата подписки"
-    )
-
-    class Meta:
-        unique_together = ("user", "author")
-        verbose_name = "Подписка"
-        verbose_name_plural = "Подписки"
