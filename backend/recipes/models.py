@@ -1,9 +1,12 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        "auth.User", on_delete=models.CASCADE, verbose_name="Автор публикации"
+        User, on_delete=models.CASCADE, verbose_name="Автор публикации"
     )
     name = models.CharField(max_length=255, verbose_name="Название")
     image = models.ImageField(upload_to="recipes/", verbose_name="Картинка")
@@ -11,10 +14,6 @@ class Recipe(models.Model):
     cooking_time = models.PositiveIntegerField(
         verbose_name="Время приготовления в минутах"
     )
-
-    @property
-    def favorites_count(self):
-        return self.favorited_by.count()
 
     class Meta:
         verbose_name = "Рецепт"
@@ -25,7 +24,7 @@ class Tag(models.Model):
     name = models.CharField(
             max_length=200, unique=True, verbose_name="Название"
     )
-    color_code = models.CharField(
+    color = models.CharField(
         max_length=7, unique=True, verbose_name="Цветовой код"
     )
     slug = models.SlugField(
@@ -40,6 +39,7 @@ class Tag(models.Model):
     )
 
     class Meta:
+        ordering = ('-id',)
         verbose_name = "Тег"
         verbose_name_plural = "Теги"
 
@@ -78,7 +78,7 @@ class RecipeIngredient(models.Model):
 
 class Favorite(models.Model):
     user = models.ForeignKey(
-        "auth.User", on_delete=models.CASCADE, related_name="favorites"
+        User, on_delete=models.CASCADE, related_name="favorites"
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="favorited_by"
@@ -92,7 +92,7 @@ class Favorite(models.Model):
 
 class ShoppingList(models.Model):
     user = models.ForeignKey(
-        "auth.User", on_delete=models.CASCADE, related_name="shopping_lists"
+        User, on_delete=models.CASCADE, related_name="shopping_lists"
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="in_shopping_lists"

@@ -12,6 +12,7 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'users.apps.UsersConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -22,7 +23,6 @@ INSTALLED_APPS = [
     'djoser',
     'foodgram_api.apps.FoodgramApiConfig',
     'recipes.apps.RecipesConfig',
-    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +125,4 @@ DJOSER = {
     }
 }
 
+AUTH_USER_MODEL = 'users.CustomUser'

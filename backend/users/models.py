@@ -1,18 +1,24 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-User = get_user_model()
 
+class CustomUser(AbstractUser):
+    pass
+
+    class Meta:
+        ordering = ('-id',)
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
 class Subscription(models.Model):
     user = models.ForeignKey(
-        "auth.User",
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="subscriptions",
         verbose_name="Подписчик",
     )
     author = models.ForeignKey(
-        "auth.User",
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="subscribers",
         verbose_name="Автор",

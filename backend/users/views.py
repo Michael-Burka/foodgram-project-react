@@ -5,9 +5,10 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from foodgram_api.pagination import LimitPageNumberPagination
-from foodgram_api.serializers import SubscriptionSerializer
+from .serializers import SubscriptionSerializer
 from .models import Subscription
 
 User = get_user_model()
@@ -15,6 +16,11 @@ User = get_user_model()
 
 class CustomUserViewSet(UserViewSet):
     pagination_class = LimitPageNumberPagination
+
+    def get_permissions(self):
+        if self.action in ['retrieve', 'list']:
+            return [AllowAny()]
+        return super().get_permissions()
 
     @action(detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
