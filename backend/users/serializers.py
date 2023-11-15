@@ -45,6 +45,7 @@ class CustomUserSerializer(UserSerializer):
             return False
         return Subscription.objects.filter(user=user, author=obj.id).exists()
 
+
 class SubscriptionSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='author.id')
     email = serializers.ReadOnlyField(source='author.email')

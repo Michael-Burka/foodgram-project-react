@@ -10,6 +10,7 @@ from .filters import IngredientSearchFilter
 class BaseAPIRootView(APIRootView):
     pass
 
+
 class TagsViewSet(ReadOnlyModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     queryset = Tag.objects.all()

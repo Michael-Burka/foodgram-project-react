@@ -44,6 +44,15 @@ class Tag(models.Model):
         verbose_name_plural = "Теги"
 
 
+class RecipeTag(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Тег рецепта"
+        verbose_name_plural = "Теги рецептов"
+
+
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=200, unique=True, verbose_name="Название"
@@ -55,15 +64,6 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
-
-
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "Тег рецепта"
-        verbose_name_plural = "Теги рецептов"
 
 
 class RecipeIngredient(models.Model):

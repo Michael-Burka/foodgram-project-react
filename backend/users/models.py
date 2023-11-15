@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
 
+
 class Subscription(models.Model):
     user = models.ForeignKey(
         CustomUser,
