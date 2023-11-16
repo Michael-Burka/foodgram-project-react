@@ -4,22 +4,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class Recipe(models.Model):
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name="Автор публикации"
-    )
-    name = models.CharField(max_length=255, verbose_name="Название")
-    image = models.ImageField(upload_to="recipes/", verbose_name="Картинка")
-    text = models.TextField(verbose_name="Текстовое описание")
-    cooking_time = models.PositiveIntegerField(
-        verbose_name="Время приготовления в минутах"
-    )
-
-    class Meta:
-        verbose_name = "Рецепт"
-        verbose_name_plural = "Рецепты"
-
-
 class Tag(models.Model):
     name = models.CharField(
             max_length=200, unique=True, verbose_name="Название"
@@ -34,23 +18,11 @@ class Tag(models.Model):
         help_text="Введите слаг",
         db_index=True,
     )
-    recipes = models.ManyToManyField(
-            Recipe, through="RecipeTag", related_name="tags"
-    )
 
     class Meta:
         ordering = ('-id',)
         verbose_name = "Тег"
         verbose_name_plural = "Теги"
-
-
-class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "Тег рецепта"
-        verbose_name_plural = "Теги рецептов"
 
 
 class Ingredient(models.Model):
@@ -64,6 +36,51 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
+
+
+class Recipe(models.Model):
+    author = models.ForeignKey(
+            User,
+            on_delete=models.CASCADE,
+            verbose_name="Автор публикации"
+            )
+    name = models.CharField(
+            max_length=255,
+            verbose_name="Название"
+            )
+    ingredients = models.ManyToManyField(
+            Ingredient,
+            through='RecipeIngredient',
+            verbose_name='Ингредиенты'
+            )
+    tags = models.ManyToManyField(
+            Tag,
+            through='RecipeTag',
+            verbose_name='Теги',
+            related_name='tags'
+            )
+    image = models.ImageField(
+            upload_to="recipes/",
+            verbose_name="Картинка"
+            )
+    text = models.TextField(verbose_name="Текстовое описание")
+    cooking_time = models.PositiveIntegerField(
+            verbose_name="Время приготовления в минутах"
+            )
+
+    class Meta:
+        verbose_name = "Рецепт"
+        verbose_name_plural = "Рецепты"
+
+
+class RecipeTag(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Тег рецепта"
+        verbose_name_plural = "Теги рецептов"
+
 
 
 class RecipeIngredient(models.Model):

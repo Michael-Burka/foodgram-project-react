@@ -6,7 +6,7 @@ from django.core.handlers.wsgi import WSGIRequest
 class IsAdminOrReadOnly(BasePermission):
     def has_object_permission(
         self, request: WSGIRequest, view: APIRootView
-    ) -> bool:
+    ):
         return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated
