@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'django_filters',    
     'foodgram_api.apps.FoodgramApiConfig',
     'recipes.apps.RecipesConfig',
 ]
