@@ -10,7 +10,7 @@ class CustomPageNumberPagination(PageNumberPagination):
     """
     page_size = 6
     page_size_query_param = "limit"
-    max_page_size = 100 
+    max_page_size = 100
 
     def get_page_size(self, request: Request) -> Optional[int]:
         """
@@ -36,4 +36,3 @@ class CustomPageNumberPagination(PageNumberPagination):
             except (KeyError, ValueError):
                 pass
         return self.page_size
-

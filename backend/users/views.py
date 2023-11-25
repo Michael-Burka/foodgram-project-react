@@ -26,7 +26,7 @@ User = get_user_model()
 
 class CustomUserViewSet(UserViewSet):
     """
-    Custom viewset for user operations including password setting, 
+    Custom viewset for user operations including password setting,
     managing subscriptions, and listing subscriptions.
 
     Inherits from UserViewSet of Djoser.
