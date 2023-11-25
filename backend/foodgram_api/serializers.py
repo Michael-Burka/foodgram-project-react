@@ -182,11 +182,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def to_representation(self, instance):
-        return RecipeSerializer(
-            instance, context={"request": self.context.get("request")}
-        ).data
-
     def to_representation(self, instance: Recipe) -> Dict[str, Any]:
         return RecipeSerializer(
             instance, context={"request": self.context.get("request")}).data
@@ -210,4 +205,3 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         context = {"request": request}
         return FavoriteSerializer(
             instance.recipe, context=context).data
-

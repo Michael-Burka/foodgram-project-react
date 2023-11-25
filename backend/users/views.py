@@ -1,9 +1,15 @@
+from typing import List, Optional
+from django.http import HttpRequest
+from rest_framework.permissions import BasePermission
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+        IsAuthenticated,
+        IsAuthenticatedOrReadOnly
+)
 from rest_framework.response import Response
 
 from foodgram_api.pagination import CustomPageNumberPagination
@@ -19,24 +25,60 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
+    """
+    Custom viewset for user operations including password setting, 
+    managing subscriptions, and listing subscriptions.
+
+    Inherits from UserViewSet of Djoser.
+
+    Attributes:
+        queryset (QuerySet): QuerySet for User objects.
+        permission_classes (tuple): Permission classes for the viewset.
+        serializer_class (CustomUserSerializer): Serializer for user data.
+        pagination_class (CustomPageNumberPagination): Pagination class.
+    """
     queryset = User.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = CustomUserSerializer
     pagination_class = CustomPageNumberPagination
     serializer_class = CustomUserSerializer
 
-    def get_permissions(self):
+    def get_permissions(self) -> List[BasePermission]:
+        """
+        Get permissions for the viewset.
+
+        Returns:
+            List[BasePermission]: A list of permission instances.
+        """
         if self.action == "me":
             return [IsAuthenticated()]
         return super().get_permissions()
 
-    @action(methods=["POST"], detail=False, permission_classes=(IsAuthenticated,))
-    def set_password(self, request, pk=None):
+    @action(
+        methods=["POST"],
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def set_password(
+            self, request: HttpRequest, pk: Optional[int] = None
+    ) -> Response:
+        """
+        Set a new password for the user.
+
+        Args:
+            request (HttpRequest): The request object.
+            pk (int, optional): Primary key of the user. Defaults to None.
+
+        Returns:
+            Response: The response object.
+        """
         user = self.request.user
-        serializer = PasswordSerializer(data=request.data, context={"request": request})
+        serializer = PasswordSerializer(
+                data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
 
-        if not user.check_password(serializer.validated_data["current_password"]):
+        if not user.check_password(
+                serializer.validated_data["current_password"]):
             return Response(
                 {"errors": "Текущий пароль неверен."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -46,8 +88,21 @@ class CustomUserViewSet(UserViewSet):
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(methods=["GET"], detail=False, permission_classes=(IsAuthenticated,))
-    def subscriptions(self, request):
+    @action(
+        methods=["GET"],
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def subscriptions(self, request: HttpRequest) -> Response:
+        """
+        List subscriptions of the user.
+
+        Args:
+            request (HttpRequest): The request object.
+
+        Returns:
+            Response: The paginated response object.
+        """
         user = request.user
         queryset = User.objects.filter(authors__user=user).distinct()
         pages = self.paginate_queryset(queryset)
@@ -57,9 +112,22 @@ class CustomUserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        methods=["POST", "DELETE"], detail=True, permission_classes=(IsAuthenticated,)
+        methods=["POST", "DELETE"],
+        detail=True,
+        permission_classes=(IsAuthenticated,)
     )
-    def subscribe(self, request, *args, **kwargs):
+    def subscribe(self, request: HttpRequest, *args, **kwargs) -> Response:
+        """
+        Subscribe to or unsubscribe from an author.
+
+        Args:
+            request (HttpRequest): The request object.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The response object.
+        """
         user = request.user
         user_id = self.kwargs.get("id")
         author = get_object_or_404(User, id=user_id)
@@ -74,7 +142,10 @@ class CustomUserViewSet(UserViewSet):
                 data = {"errors": "Вы уже подписаны на автора!"}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             Subscription.objects.create(user=user, author=author)
-            serializer = SubscriptionSerializer(author, context={"request": request})
+            serializer = SubscriptionSerializer(
+                    author,
+                    context={"request": request}
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == "DELETE":
             if not subscribe.exists():

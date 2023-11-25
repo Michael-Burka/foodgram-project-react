@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from typing import Any
 
+
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow owners of an object to edit it.
@@ -47,4 +48,3 @@ class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
             or obj.author == request.user
             or request.user.is_staff
         )
-

@@ -2,6 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from typing import Optional
 
+
 class CustomPageNumberPagination(PageNumberPagination):
     """
     Custom pagination class that extends PageNumberPagination.

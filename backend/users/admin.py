@@ -8,13 +8,15 @@ User = get_user_model()
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
+    """
+    Custom admin interface for User model.
+
+    Extends Django's default UserAdmin to customize the admin interface.
+    """
+
     list_display = [
-        "email",
-        "username",
-        "first_name",
-        "last_name",
-        "is_active",
-        "date_joined",
+        "email", "username", "first_name", "last_name",
+        "is_active", "date_joined",
     ]
     list_filter = ["is_active", "first_name", "email"]
     search_fields = ["username", "email", "first_name", "last_name"]
@@ -26,11 +28,8 @@ class CustomUserAdmin(UserAdmin):
             "Permissions",
             {
                 "fields": [
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                    "groups",
-                    "user_permissions",
+                    "is_active", "is_staff", "is_superuser",
+                    "groups", "user_permissions",
                 ]
             },
         ),
@@ -49,8 +48,14 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
+    """
+    Custom admin interface for Subscription model.
+
+    Configures list display, filters, search fields, and readonly fields
+    for Subscription model in Django admin.
+    """
+
     list_display = ["author", "user", "subscribed_at"]
     list_filter = ["author", "user"]
     readonly_fields = ["subscribed_at"]
     search_fields = ["author__username", "user__username"]
-
