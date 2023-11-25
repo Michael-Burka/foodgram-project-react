@@ -1,38 +1,82 @@
 from django.contrib import admin
-
-from recipes.models import Recipe, Tag, Ingredient, Favorite, ShoppingCart
-
-
-class IngredientsInLine(admin.TabularInline):
-    model = Recipe.ingredients.through
+from recipes.models import (
+    Recipe, Tag, Ingredient, Favorite,
+    ShoppingCart, RecipeTag, RecipeIngredient
+)
 
 
+class RecipeTagInline(admin.TabularInline):
+    """
+    Inline admin for displaying RecipeTag within the Recipe admin page.
+    """
+    model = RecipeTag
+    extra = 1
+
+
+class RecipeIngredientInline(admin.TabularInline):
+    """
+    Inline admin for displaying RecipeIngredient within the Recipe admin page.
+    """
+    model = RecipeIngredient
+    extra = 1
+
+
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'author', 'favorites']
-    search_fields = ['name', 'author__username']
-    list_filter = ['tags']
-    inlines = (
-        IngredientsInLine,
-    )
-   
-    def favorites(self, obj):
-        if Favorite.objects.filter(recipe=obj).exists():
-            return Favorite.objects.filter(recipe=obj).count()
-        return 0
+    """
+    Admin interface for Recipe model.
+    """
+    list_display = ["id", "name", "author", "favorites_count"]
+    search_fields = ["name", "author__username", "tags__name"]
+    list_filter = ["tags", "author", "pub_date"]
+    inlines = [RecipeIngredientInline, RecipeTagInline]
+
+    def favorites_count(self, obj: Recipe) -> int:
+        """
+        Returns the count of favorites for a recipe.
+
+        Args:
+            obj (Recipe): Recipe instance.
+
+        Returns:
+            int: Count of favorites.
+        """
+        return obj.favorites.count()
+
+    favorites_count.short_description = "Favorites Count"
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'color')
+    """
+    Admin interface for Tag model.
+    """
+    list_display = ("name", "slug", "color")
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit')
-    list_filter = ('name',)
+    """
+    Admin interface for Ingredient model.
+    """
+    list_display = ("name", "measurement_unit")
+    search_fields = ["name"]
 
 
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    """
+    Admin interface for Favorite model.
+    """
+    list_display = ("user", "recipe")
+    list_filter = ("user", "recipe")
 
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(ShoppingCart)
-admin.site.register(Favorite)
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    """
+    Admin interface for ShoppingCart model.
+    """
+    list_display = ("user", "recipe", "added_at")
+    list_filter = ("user", "recipe")
+

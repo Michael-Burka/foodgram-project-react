@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-ws8w5ga-c%rm*6ahyqb&&@^q6u^sj^=7j8$c7#_m!*qnbbys1j'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
@@ -94,7 +94,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'collected_static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -125,5 +125,4 @@ DJOSER = {
         'user_list': ('rest_framework.permissions.AllowAny',)
     }
 }
-
 AUTH_USER_MODEL = 'users.CustomUser'

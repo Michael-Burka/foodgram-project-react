@@ -1,0 +1,50 @@
+[
+    {
+        "model": "recipes.tag",
+        "fields": {
+            "name": "Vegan",
+            "color": "#1E8E3E",
+            "slug": "vegan"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "fields": {
+            "name": "Gluten Free",
+            "color": "#FFD700",
+            "slug": "gluten-free"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "fields": {
+            "name": "No Sugar",
+            "color": "#FF4500",
+            "slug": "no-sugar"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "fields": {
+            "name": "Low Carb",
+            "color": "#6495ED",
+            "slug": "low-carb"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "fields": {
+            "name": "Organic",
+            "color": "#32CD32",
+            "slug": "organic"
+        }
+    },
+    {
+        "model": "recipes.tag",
+        "fields": {
+            "name": "Dairy Free",
+            "color": "#FF69B4",
+            "slug": "dairy-free"
+        }
+    }
+]

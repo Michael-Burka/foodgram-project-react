@@ -1,24 +1,23 @@
+import openpyxl
+from io import BytesIO
+from django.db.models import Sum
+
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.decorators import action
 from rest_framework.routers import APIRootView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status, viewsets
-import openpyxl
-from io import BytesIO
 from django.http import HttpResponse
 from datetime import datetime
-from django.db.models import Sum
 
 from recipes.models import (
     Tag,
     Ingredient,
     Recipe,
     RecipeIngredient,
-    RecipeTag,
     Favorite,
     ShoppingCart,
 )
@@ -86,17 +85,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
 
         if request.method == "POST":
-            if list_model.objects.filter(user=request.user, recipe=recipe).exists():
+            if list_model.objects.filter(
+                    user=request.user, recipe=recipe
+            ).exists():
                 return Response(
                     {"errors": "The recipe is already in favorites!"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             list_model.objects.create(user=request.user, recipe=recipe)
-            serializer = FavoriteSerializer(recipe, context={"request": request})
+            serializer = FavoriteSerializer(
+                    recipe,
+                    context={"request": request}
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == "DELETE":
-            favorite_entry = list_model.objects.filter(user=request.user, recipe=recipe)
+            favorite_entry = list_model.objects.filter(
+                    user=request.user, recipe=recipe
+            )
             if favorite_entry.exists():
                 favorite_entry.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -116,12 +122,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.__favorite_list(request, pk, Favorite)
 
     @action(
-        methods=["DELETE", "POST"], detail=True, permission_classes=(IsAuthenticated,)
+        methods=["DELETE", "POST"],
+        detail=True,
+        permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk=None):
-        return self.__favorite_list(request=request, list_model=ShoppingCart, pk=pk)
+        return self.__favorite_list(
+                request=request, list_model=ShoppingCart, pk=pk
+        )
 
-    @action(detail=False, methods=["GET"], permission_classes=(IsAuthenticated,))
+    @action(
+            detail=False,
+            methods=["GET"],
+            permission_classes=(IsAuthenticated,)
+    )
     def download_shopping_cart(self, request):
         shopping_cart_items = ShoppingCart.objects.filter(user=request.user)
         ingredients = RecipeIngredient.objects.filter(
@@ -132,16 +146,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount_sum=Sum("amount")
         )
 
-        # Create a new Excel workbook and sheet
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "Shopping List"
 
-        # Add headers
         headers = ['Ingredient', 'Measurement Unit', 'Total Amount']
         ws.append(headers)
 
-        # Add data rows
         for ingredient in ingredients:
             ws.append([
                 ingredient["ingredient__name"], 
@@ -149,14 +160,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 ingredient["amount_sum"]
             ])
 
-        # Save the workbook to a BytesIO buffer
         output = BytesIO()
         wb.save(output)
 
-        # Format the current date and time for the filename
         current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        # Create the HTTP response
         response = HttpResponse(output.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = f'attachment; filename=shopping_lists_{current_time}.xlsx'
         return response
