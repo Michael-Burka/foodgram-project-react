@@ -1,4 +1,4 @@
-name: Main fooodgram workflow
+name: Main foodgram workflow
 
 on:
   push
@@ -80,7 +80,7 @@ jobs:
         with:
           context: ./frontend/
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/fooodgram_frontend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -98,7 +98,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         source: "infra/docker-compose.production.yml,infra/nginx.conf"
-        target: "fooodgram"
+        target: "foodgram"
     - name: Create .env file and populate with secrets
       uses: appleboy/ssh-action@master
       with:
@@ -107,7 +107,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          cd fooodgram
+          cd foodgram
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" > .env
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
@@ -124,7 +124,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          cd fooodgram
+          cd foodgram
           sudo docker compose -f docker-compose.production.yml pull
           sudo docker compose -f docker-compose.production.yml down
           sudo docker compose -f docker-compose.production.yml up -d
