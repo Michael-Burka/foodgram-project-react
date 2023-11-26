@@ -1,5 +1,6 @@
 import json
 
+
 def create_tag_fixtures(output_file):
     # Fixture data for 6 tags
     fixture_data = [
@@ -57,7 +58,7 @@ def create_tag_fixtures(output_file):
     with open(output_file, 'w', encoding='utf-8') as file:
         json.dump(fixture_data, file, ensure_ascii=False, indent=4)
 
+
 # Usage
 output_file = 'tag_fixtures.json'  # Path for the output file
 create_tag_fixtures(output_file)
-
