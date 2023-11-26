@@ -11,9 +11,9 @@ from rest_framework.permissions import (BasePermission, IsAuthenticated,
 from rest_framework.response import Response
 
 from foodgram_api.pagination import CustomPageNumberPagination
-from .models import Subscription
-from .serializers import (CustomUserSerializer, PasswordSerializer,
-                          SubscriptionSerializer)
+from users.models import Subscription
+from users.serializers import (CustomUserSerializer, PasswordSerializer,
+                               SubscriptionSerializer)
 
 User = get_user_model()
 
@@ -68,7 +68,7 @@ class CustomUserViewSet(UserViewSet):
         """
         user = self.request.user
         serializer = PasswordSerializer(
-                data=request.data, context={"request": request})
+            data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
 
         if not user.check_password(
@@ -137,8 +137,8 @@ class CustomUserViewSet(UserViewSet):
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             Subscription.objects.create(user=user, author=author)
             serializer = SubscriptionSerializer(
-                    author,
-                    context={"request": request}
+                author,
+                context={"request": request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == "DELETE":

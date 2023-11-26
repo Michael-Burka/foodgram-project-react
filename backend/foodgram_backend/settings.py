@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'django_filters',    
+    'django_filters',
     'foodgram_api.apps.FoodgramApiConfig',
     'recipes.apps.RecipesConfig',
 ]
@@ -70,7 +70,6 @@ DATABASES = {
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', ''),
         'PORT': os.getenv('DB_PORT', 5432)
-        
     }
 }
 

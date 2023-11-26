@@ -1,10 +1,10 @@
 from typing import Any, Dict, List
 
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            RecipeTag, ShoppingCart, Tag)
 from rest_framework import serializers
 
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            RecipeTag, ShoppingCart, Tag)
 from users.serializers import CustomUserSerializer
 
 
@@ -107,25 +107,25 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         ingredient_ids = [ingredient["id"] for ingredient in ingredients]
         if not Ingredient.objects.filter(id__in=ingredient_ids).exists():
             raise serializers.ValidationError(
-                    "One or more ingredients do not exist.")
+                "One or more ingredients do not exist.")
         if len(set(ingredient_ids)) != len(ingredient_ids):
             raise serializers.ValidationError(
-                    "Ingredients must not be repetitive.")
+                "Ingredients must not be repetitive.")
         return ingredients
 
     def validate_tags(self, tags: List[Tag]) -> List[Tag]:
         if not tags:
             raise serializers.ValidationError(
-                    {"error": "Please specify a tag!"})
+                {"error": "Please specify a tag!"})
         if len(set(tags)) != len(tags):
             raise serializers.ValidationError(
-                    {"error": "Tags must not be repetitive."})
+                {"error": "Tags must not be repetitive."})
         return tags
 
     def validate_cooking_time(self, value: int) -> int:
         if value < 1:
             raise serializers.ValidationError(
-                    "Cooking time must be greater than zero.")
+                "Cooking time must be greater than zero.")
         return value
 
     def validate(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -135,7 +135,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"error": "Select ingredients!"})
         if not tags:
             raise serializers.ValidationError(
-                    {"error": "Please specify a tag!"})
+                {"error": "Please specify a tag!"})
         return data
 
     def validate_image(self, value) -> Any:

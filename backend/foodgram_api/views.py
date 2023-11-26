@@ -6,8 +6,6 @@ import openpyxl
 from django.db import models
 from django.http import HttpRequest, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -15,12 +13,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from .filters import IngredientSearchFilter, RecipesFilter
-from .pagination import CustomPageNumberPagination
-from .permissions import IsOwnerOrAdminOrReadOnly
-from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
-                          IngredientSerializer, RecipeSerializer,
-                          TagSerializer)
+from foodgram_api.filters import IngredientSearchFilter, RecipesFilter
+from foodgram_api.pagination import CustomPageNumberPagination
+from foodgram_api.permissions import IsOwnerOrAdminOrReadOnly
+from foodgram_api.serializers import (CreateRecipeSerializer,
+                                      FavoriteSerializer, IngredientSerializer,
+                                      RecipeSerializer, TagSerializer)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
@@ -159,14 +159,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
             list_model.objects.create(user=request.user, recipe=recipe)
             serializer = FavoriteSerializer(
-                    recipe,
-                    context={"request": request}
+                recipe,
+                context={"request": request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == "DELETE":
             favorite_entry = list_model.objects.filter(
-                    user=request.user, recipe=recipe)
+                user=request.user, recipe=recipe)
             if favorite_entry.exists():
                 favorite_entry.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -212,12 +212,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             The HTTP response object.
         """
         return self.__favorite_list(
-                request=request, list_model=ShoppingCart, pk=pk)
+            request=request, list_model=ShoppingCart, pk=pk)
 
     @action(
-            detail=False,
-            methods=["GET"],
-            permission_classes=(IsAuthenticated,)
+        detail=False,
+        methods=["GET"],
+        permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request: Request) -> HttpResponse:
         """

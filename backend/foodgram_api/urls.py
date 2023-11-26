@@ -1,8 +1,8 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from foodgram_api.views import IngredientsViewSet, RecipeViewSet, TagsViewSet
 from users.views import CustomUserViewSet
-from .views import IngredientsViewSet, RecipeViewSet, TagsViewSet
 
 app_name = "foodgram_api"
 
