@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.db.models import UniqueConstraint
 
 User = get_user_model()
@@ -44,7 +44,7 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name="Author", 
+        User, on_delete=models.CASCADE, verbose_name="Author",
         related_name="recipes"
     )
     name = models.CharField(max_length=200, verbose_name="Name")

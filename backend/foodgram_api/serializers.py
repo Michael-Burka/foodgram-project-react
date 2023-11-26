@@ -1,11 +1,10 @@
 from typing import Any, Dict, List
-from rest_framework import serializers
-from drf_extra_fields.fields import Base64ImageField
 
-from recipes.models import (
-    Tag, Ingredient, Recipe, RecipeIngredient,
-    RecipeTag, Favorite, ShoppingCart
-)
+from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            RecipeTag, ShoppingCart, Tag)
+from rest_framework import serializers
+
 from users.serializers import CustomUserSerializer
 
 

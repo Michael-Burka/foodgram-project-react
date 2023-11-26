@@ -1,6 +1,7 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 current_directory = Path(__file__).parent
 env_path = current_directory.parent.parent / '.env'

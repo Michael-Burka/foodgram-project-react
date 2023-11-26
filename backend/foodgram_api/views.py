@@ -1,48 +1,26 @@
-from typing import Any, Type, Union, Dict
-import openpyxl
-from io import BytesIO
-from django.db import models
-
-from django.http import HttpResponse, HttpRequest
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework.decorators import action
-from rest_framework.routers import APIRootView
-from rest_framework.response import Response
-from rest_framework.request import Request
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status, viewsets
 from datetime import datetime
+from io import BytesIO
+from typing import Any, Dict, Type, Union
 
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    Favorite,
-    ShoppingCart,
-)
-from .serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    RecipeSerializer,
-    CreateRecipeSerializer,
-    FavoriteSerializer,
-)
+import openpyxl
+from django.db import models
+from django.http import HttpRequest, HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag)
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
 from .filters import IngredientSearchFilter, RecipesFilter
 from .pagination import CustomPageNumberPagination
 from .permissions import IsOwnerOrAdminOrReadOnly
-
-
-class BaseAPIRootView(APIRootView):
-    """
-    A base class for API root views.
-
-    Inherits from `APIRootView` in Django REST framework's router.
-    It can be extended to customize the base API root view.
-    """
-
-    pass
+from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
+                          IngredientSerializer, RecipeSerializer,
+                          TagSerializer)
 
 
 class TagsViewSet(ReadOnlyModelViewSet):

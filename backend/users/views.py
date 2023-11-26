@@ -1,25 +1,19 @@
 from typing import List, Optional
-from django.http import HttpRequest
-from rest_framework.permissions import BasePermission
+
 from django.contrib.auth import get_user_model
+from django.http import HttpRequest
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import (
-        IsAuthenticated,
-        IsAuthenticatedOrReadOnly
-)
+from rest_framework.permissions import (BasePermission, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from foodgram_api.pagination import CustomPageNumberPagination
-from .serializers import (
-    CustomUserSerializer,
-    PasswordSerializer,
-    SubscriptionSerializer,
-)
 from .models import Subscription
-
+from .serializers import (CustomUserSerializer, PasswordSerializer,
+                          SubscriptionSerializer)
 
 User = get_user_model()
 
