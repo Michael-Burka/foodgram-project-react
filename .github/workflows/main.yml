@@ -39,11 +39,11 @@ jobs:
         DB_HOST: 127.0.0.1
         DB_PORT: 5432
       run: |
-        python -m flake8
+        python -m flake8 --config=backend/setup.cfg
         cd backend/
         python manage.py test
 
-  build_and_push_to_docker_hub:
+  build_backend_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
     runs-on: ubuntu-latest
     needs: tests
@@ -60,7 +60,7 @@ jobs:
       - name: Push to DockerHub
         uses: docker/build-push-action@v4
         with:
-          context: ./backend/
+          context: ./backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
 
@@ -72,7 +72,7 @@ jobs:
     - name: Set up nodeJS
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 13.12.0
     - name: Install dependencies
       run: |
         cd frontend/
@@ -99,36 +99,48 @@ jobs:
       - name: Push to DockerHub
         uses: docker/build-push-action@v4
         with:
-          context: ./frontend/
+          context: ./frontend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/fooodgram_frontend:latest
 
-  build_gateway_and_push_to_docker_hub:
-    name: Push gateway Docker image to DockerHub
-    runs-on: ubuntu-latest
+  copy_files_to_server:
+    name: Copy infra and docs
+    runs-on: ubuntu-latest 
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to Docker
-        uses: docker/login-action@v2
+      - uses: actions/checkout@v2
+
+      - name: Create projects directory
+        uses: garygrossgarten/github-action-ssh@release
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Push to DockerHub
-        uses: docker/build-push-action@v4
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+          command: cd ~ && mkdir -p foodgram && mkdir -p foodgram/docs
+
+      - name: Copy infra files
+        uses: garygrossgarten/github-action-scp@release
         with:
-          context: ./nginx/
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/fooodgram_gateway:latest
+            local: infra/
+            remote: /${{ secrets.USERNAME }}/foodgram/
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            privateKey: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Copy docs
+        uses: garygrossgarten/github-action-scp@release
+        with:
+            local: docs
+            remote: /${{ secrets.USERNAME }}/foodgram/docs/
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            privateKey: ${{ secrets.PRIVATE_KEY }}
 
   deploy:
     runs-on: ubuntu-latest
     needs:
+      - copy_files_to_server
       - build_and_push_to_docker_hub
       - build_frontend_and_push_to_docker_hub
-      - build_gateway_and_push_to_docker_hub
     if: github.ref == 'refs/heads/main'
     steps:
     - name: Checkout repo
@@ -140,8 +152,25 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: "docker-compose.production.yml"
+        source: "infra/docker-compose.production.yml,infra/nginx.conf"
         target: "fooodgram"
+      - name: Create .env file and populate with secrets
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd fooodgram
+            echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} > .env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+            echo DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }} >> .env
+            echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:
@@ -154,10 +183,8 @@ jobs:
           sudo docker compose -f docker-compose.production.yml pull
           sudo docker compose -f docker-compose.production.yml down
           sudo docker compose -f docker-compose.production.yml up -d
-          sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-          sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-          sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
           sudo docker system prune -af
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
