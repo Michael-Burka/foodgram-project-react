@@ -9,6 +9,7 @@ current_directory = Path(__file__).parent
 env_path = current_directory.parent.parent.parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
+
 class Command(BaseCommand):
     help = "Creates a superuser"
 
