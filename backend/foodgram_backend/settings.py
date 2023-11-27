@@ -129,4 +129,9 @@ DJOSER = {
         'user_list': ('rest_framework.permissions.AllowAny',)
     }
 }
+
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+csrf_origin = os.getenv('CSRF_TRUSTED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = [csrf_origin] if csrf_origin else []

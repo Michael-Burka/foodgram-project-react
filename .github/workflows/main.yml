@@ -117,6 +117,7 @@ jobs:
           echo "DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}" >> .env
           echo "SECRET_KEY='${{ secrets.SECRET_KEY }}'" >> .env
           echo "DEBUG='${{ secrets.DEBUG }}'" >> .env
+          echo "CSRF_TRUSTED_ORIGINS='${{ secrets.CSRF_TRUSTED_ORIGINS }}'" >> .env
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:

@@ -48,6 +48,8 @@ DB_HOST=<your_database_host>
 DB_PORT=<your_database_port>
 DJANGO_SUPERUSER_PASSWORD=<your_django_admin_password>
 SECRET_KEY=<your_django_secret_key>
+DEBUG='False'
+CSRF_TRUSTED_ORIGINS=<your_csrf_trusted_origins>
 ```
 
 ## Important Security Consideration
@@ -64,7 +66,7 @@ The Foodgram application has an automated setup and launch process managed by th
 
 2. **Database Migrations**: Performs Django migrations for 'users' and 'recipes' apps to ensure the database schema is correctly set up.
 
-3. **Data Loading**: Imports initial data into the database, such as the ingredients from the `transformed_ingredients.json` file.
+3. **Data Loading**: Data Loading: Imports initial data into the database, including ingredients from `transformed_ingredients.json` and tag fixtures from `tag_fixtures.json`.
 
 4. **Superuser Creation**: Creates a Django superuser account using the credentials provided in the `.env` file. This account is essential for accessing the Django admin panel.
 
