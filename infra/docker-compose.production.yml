@@ -31,7 +31,7 @@ services:
 
   frontend:
     image: michaelburka/foodgram_frontend:latest
-    build: ../backend
+    build: ../frontend
     container_name: foodgram-front
     volumes:
       - ./frontend/:/app/result_build/
