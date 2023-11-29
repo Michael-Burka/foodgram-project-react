@@ -13,6 +13,7 @@ class IngredientSearchFilter(SearchFilter):
     """
     Search filter for ingredients by name.
     """
+
     search_param = "name"
 
 
@@ -21,6 +22,7 @@ class RecipesFilter(FilterSet):
     Custom filter set for filtering recipes.
     Supports filtering by tags, author, is_favorited, and is_in_shopping_cart.
     """
+
     tags = filters.AllValuesMultipleFilter(field_name="tags__slug")
     is_favorited = filters.BooleanFilter(method="filter_is_favorited")
     is_in_shopping_cart = filters.BooleanFilter(
@@ -37,6 +39,7 @@ class RecipesFilter(FilterSet):
         """
         Filter the queryset by whether a recipe is favorited by the user.
         """
+
         if value and not self.request.user.is_anonymous:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
@@ -47,8 +50,7 @@ class RecipesFilter(FilterSet):
         """
         Filter the queryset by whether a recipe is in the user's shopping cart.
         """
+
         if value and not self.request.user.is_anonymous:
             return queryset.filter(in_shopping_cart__user=self.request.user)
         return queryset
-
-

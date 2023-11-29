@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
@@ -54,10 +55,12 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag, through="RecipeTag", verbose_name="Tags", related_name="tags"
     )
-    image = models.ImageField(upload_to="recipes/", verbose_name="Image")
+    image = models.ImageField(
+            upload_to="recipes/", verbose_name="Image")
     text = models.TextField(verbose_name="Description")
-    cooking_time = models.PositiveIntegerField(
-        verbose_name="Cooking Time in Minutes"
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name="Cooking Time in Minutes",
+        validators=[MinValueValidator(1)]
     )
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name="Publication Date"
@@ -73,28 +76,39 @@ class Recipe(models.Model):
 
 
 class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name="recipe_tags"
+    )
+    tag = models.ForeignKey(
+        Tag, 
+        on_delete=models.CASCADE,
+        related_name="tag_recipes"
+    )
 
     class Meta:
         verbose_name = "Recipe Tag"
         verbose_name_plural = "Recipe Tags"
 
     def __str__(self):
-        return self.name
+        return f"{self.recipe.name} - {self.tag.name}"
 
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    amount = models.PositiveIntegerField(verbose_name="Amount")
+    amount = models.PositiveSmallIntegerField(
+        verbose_name="Amount",
+        validators=[MinValueValidator(1)]
+    )
 
     class Meta:
         verbose_name = "Recipe Ingredient"
         verbose_name_plural = "Recipe Ingredients"
 
     def __str__(self):
-        return self.name
+        return f"{self.ingredient.name} in {self.recipe.name}"
 
 
 class Favorite(models.Model):
@@ -132,6 +146,11 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = "Shopping Cart"
         verbose_name_plural = "Shopping Carts"
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'], name='unique_user_recipe'
+            )
+        ]
 
     def __str__(self):
-        return self.name
+        return f"{self.user.username} - {self.recipe.name}"

@@ -122,12 +122,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 {"error": "Tags must not be repetitive."})
         return tags
 
-    def validate_cooking_time(self, value: int) -> int:
-        if value < 1:
-            raise serializers.ValidationError(
-                "Cooking time must be greater than zero.")
-        return value
-
     def validate(self, data: Dict[str, Any]) -> Dict[str, Any]:
         ingredients = data.get("ingredients")
         tags = data.get("tags")
@@ -144,16 +138,26 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return value
 
     def create_ingredients(self, ingredients, recipe):
+        ingredient_objs = []
         for ingredient_data in ingredients:
-            ingredient = Ingredient.objects.get(id=ingredient_data["id"])
-            RecipeIngredient.objects.create(
-                ingredient=ingredient, recipe=recipe,
-                amount=ingredient_data["amount"]
-            )
+            try:
+                ingredient = Ingredient.objects.get(id=ingredient_data["id"])
+                ingredient_objs.append(
+                    RecipeIngredient(
+                        ingredient=ingredient, recipe=recipe,
+                        amount=ingredient_data["amount"]
+                    )
+                )
+            except Ingredient.DoesNotExist:
+                raise serializers.ValidationError(
+                    f"Ingredient with id {ingredient_data['id']}"
+                    " does not exist."
+                )
+        RecipeIngredient.objects.bulk_create(ingredient_objs)
 
     def create_tags(self, tags, recipe):
-        for tag in tags:
-            RecipeTag.objects.create(recipe=recipe, tag=tag)
+        tag_objs = [RecipeTag(recipe=recipe, tag=tag) for tag in tags]
+        RecipeTag.objects.bulk_create(tag_objs)
 
     def create(self, validated_data: Dict[str, Any]) -> Recipe:
         ingredients = validated_data.pop("ingredients")

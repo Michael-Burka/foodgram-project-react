@@ -98,7 +98,7 @@ class CustomUserViewSet(UserViewSet):
             Response: The paginated response object.
         """
         user = request.user
-        queryset = User.objects.filter(authors__user=user).distinct()
+        queryset = User.objects.filter(authors__user=user)
         pages = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
             pages, many=True, context={"request": request}
@@ -106,13 +106,14 @@ class CustomUserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        methods=["POST", "DELETE"],
+        methods=["POST"],
         detail=True,
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticated,),
+        name="Subscribe"
     )
     def subscribe(self, request: HttpRequest, *args, **kwargs) -> Response:
         """
-        Subscribe to or unsubscribe from an author.
+        Subscribe to an author.
 
         Args:
             request (HttpRequest): The request object.
@@ -120,30 +121,49 @@ class CustomUserViewSet(UserViewSet):
             **kwargs: Arbitrary keyword arguments.
 
         Returns:
-            Response: The response object.
+            Response: The response object with
+            subscription data or error message.
         """
+
         user = request.user
         user_id = self.kwargs.get("id")
         author = get_object_or_404(User, id=user_id)
+
         if user == author:
-            return Response(
-                {"errors": "Нельзя подписаться на самого себя!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        subscribe = Subscription.objects.filter(user=user, author=author)
-        if request.method == "POST":
-            if subscribe.exists():
-                data = {"errors": "Вы уже подписаны на автора!"}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            Subscription.objects.create(user=user, author=author)
-            serializer = SubscriptionSerializer(
-                author,
-                context={"request": request}
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        if request.method == "DELETE":
-            if not subscribe.exists():
-                data = {"errors": "Вы не подписаны на автора!"}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            subscribe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({"errors": "Нельзя подписаться на самого себя!"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if Subscription.objects.filter(user=user, author=author).exists():
+            return Response({"errors": "Вы уже подписаны на автора!"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        Subscription.objects.create(user=user, author=author)
+        serializer = SubscriptionSerializer(
+                author, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @subscribe.mapping.delete
+    def unsubscribe(self, request: HttpRequest, *args, **kwargs) -> Response:
+        """
+        Unsubscribe from an author.
+
+        Args:
+            request (HttpRequest): The request object.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The response object indicating success or error message.
+        """
+
+        user = request.user
+        user_id = self.kwargs.get("id")
+        author = get_object_or_404(User, id=user_id)
+
+        subscription = Subscription.objects.filter(user=user, author=author)
+        if not subscription.exists():
+            return Response({"errors": "Вы не подписаны на автора!"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        subscription.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

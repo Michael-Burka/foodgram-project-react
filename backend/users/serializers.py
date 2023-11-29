@@ -25,6 +25,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         username (CharField):
             Username field with unique validation and custom validator.
     """
+
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
@@ -42,13 +43,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             "email", "id", "password", "username",
             "first_name", "last_name"
         )
-        extra_kwargs = {
-            "email": {"required": True},
-            "username": {"required": True},
-            "password": {"required": True},
-            "first_name": {"required": True},
-            "last_name": {"required": True},
-        }
 
 
 class CustomUserSerializer(UserSerializer):
@@ -60,7 +54,15 @@ class CustomUserSerializer(UserSerializer):
     Methods:
         get_is_subscribed: Check if the user is subscribed to the object user.
     """
+
     is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+                "email", "id", "username", "first_name",
+                "last_name", "is_subscribed"
+                )
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -74,19 +76,13 @@ class CustomUserSerializer(UserSerializer):
             bool:
                 True if the current user is subscribed to obj, False otherwise.
         """
+
         user = self.context.get("request").user
         if user.is_anonymous:
             return False
         return Subscription.objects.filter(
             user=user, author=obj.id
         ).exists()
-
-    class Meta:
-        model = User
-        fields = (
-            "email", "id", "username", "first_name",
-            "last_name", "is_subscribed"
-        )
 
 
 class PasswordSerializer(serializers.Serializer):
@@ -97,6 +93,7 @@ class PasswordSerializer(serializers.Serializer):
         current_password (CharField): Field for the current password.
         new_password (CharField): Field for the new password.
     """
+
     current_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
 
@@ -108,6 +105,7 @@ class SubscriptionRecipeSerializer(serializers.ModelSerializer):
     Attributes:
         image (Base64ImageField): Field for the recipe image in base64 format.
     """
+
     image = Base64ImageField()
 
     class Meta:
@@ -124,9 +122,17 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         get_recipes: Get limited recipes of the author.
         get_recipes_count: Get the count of recipes by the author.
     """
+
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+                "id", "email", "username", "first_name", "last_name",
+                "is_subscribed", "recipes", "recipes_count"
+                )
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -138,6 +144,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         Returns:
             bool: Subscription status.
         """
+
         user = self.context["request"].user
         if user.is_anonymous:
             return False
@@ -155,6 +162,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         Returns:
             List[Dict]: A list of serialized recipes.
         """
+
         limit = self.context["request"].query_params.get("recipes_limit")
         recipes = obj.recipes.all()
         if limit is not None:
@@ -179,11 +187,5 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         Returns:
             int: Number of recipes.
         """
-        return obj.recipes.count()
 
-    class Meta:
-        model = User
-        fields = (
-            "id", "email", "username", "first_name", "last_name",
-            "is_subscribed", "recipes", "recipes_count"
-        )
+        return obj.recipes.count()

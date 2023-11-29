@@ -9,6 +9,7 @@ class CustomPageNumberPagination(PageNumberPagination):
     Custom pagination class that extends PageNumberPagination.
     Allows clients to control the page size using a query parameter.
     """
+
     page_size = 6
     page_size_query_param = "limit"
     max_page_size = 100
@@ -24,6 +25,7 @@ class CustomPageNumberPagination(PageNumberPagination):
             Optional[int]: The page size to be used for pagination.
                            Returns None if the page size is not set.
         """
+
         if self.page_size_query_param:
             try:
                 limit_str = request.query_params.get(

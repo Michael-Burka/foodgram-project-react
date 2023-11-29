@@ -144,7 +144,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     {"error": "The recipe does not exist."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            elif request.method == "DELETE":
+            if request.method == "DELETE":
                 return Response(
                     {"error": "The recipe does not exist."},
                     status=status.HTTP_404_NOT_FOUND,
