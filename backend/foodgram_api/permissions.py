@@ -17,7 +17,6 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         """
         Return True if permission is granted, False otherwise.
         """
-
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_authenticated
@@ -33,8 +32,8 @@ class IsOwnerOrAdminOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
     """
 
     def has_object_permission(
-            self, request: Request, view: APIView, obj: Any
-            ) -> bool:
+        self, request: Request, view: APIView, obj: Any
+    ) -> bool:
         """
         Return True if permission is granted, False otherwise.
         """

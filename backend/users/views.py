@@ -139,7 +139,8 @@ class CustomUserViewSet(UserViewSet):
 
         Subscription.objects.create(user=user, author=author)
         serializer = SubscriptionSerializer(
-                author, context={"request": request})
+            author, context={"request": request}
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete

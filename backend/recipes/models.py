@@ -56,7 +56,8 @@ class Recipe(models.Model):
         Tag, through="RecipeTag", verbose_name="Tags", related_name="tags"
     )
     image = models.ImageField(
-            upload_to="recipes/", verbose_name="Image")
+        upload_to="recipes/", verbose_name="Image"
+    )
     text = models.TextField(verbose_name="Description")
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name="Cooking Time in Minutes",
@@ -82,7 +83,7 @@ class RecipeTag(models.Model):
         related_name="recipe_tags"
     )
     tag = models.ForeignKey(
-        Tag, 
+        Tag,
         on_delete=models.CASCADE,
         related_name="tag_recipes"
     )

@@ -60,9 +60,9 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = (
-                "email", "id", "username", "first_name",
-                "last_name", "is_subscribed"
-                )
+            "email", "id", "username", "first_name",
+            "last_name", "is_subscribed"
+        )
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -130,9 +130,9 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-                "id", "email", "username", "first_name", "last_name",
-                "is_subscribed", "recipes", "recipes_count"
-                )
+            "id", "email", "username", "first_name", "last_name",
+            "is_subscribed", "recipes", "recipes_count"
+        )
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
