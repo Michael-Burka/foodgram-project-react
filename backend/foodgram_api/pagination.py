@@ -22,7 +22,7 @@ class CustomPageNumberPagination(PageNumberPagination):
             request (Request): The incoming request.
 
         Returns:
-            Optional[int]: 
+            Optional[int]:
                 The page size to be used for pagination.
                 Returns None if the page size is not set.
         """
