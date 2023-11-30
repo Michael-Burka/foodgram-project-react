@@ -74,6 +74,10 @@ The Foodgram application has an automated setup and launch process managed by th
 
 6. **Start Gunicorn Server**: Launches the application using Gunicorn, a Python WSGI HTTP server, with a specified number of workers and binds it to a designated port. This step is crucial for the application to start receiving and responding to HTTP requests.
 
+## Exploring the Application
+
+Foodgram is live and can be accessed at: [http://51.250.105.66/](http://51.250.105.66/). Here you can explore the features of Foodgram firsthand. The application is designed to be intuitive and user-friendly.
+
 ## Feedback and contact
 
 If you have suggestions, inquiries, or just wish to discuss any aspect of this project:

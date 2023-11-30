@@ -23,7 +23,7 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ["username", "email", "first_name", "last_name"]
     ordering = ["email"]
     fieldsets = (
-        (None, {"fields": ["email", "password"]}),
+        (None, {"fields": ["username", "email", "password"]}),
         ("Personal info", {"fields": ["first_name", "last_name"]}),
         (
             "Permissions",

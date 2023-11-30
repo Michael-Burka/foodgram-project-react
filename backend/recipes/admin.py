@@ -19,7 +19,7 @@ class RecipeIngredientInline(admin.TabularInline):
     """
 
     model = RecipeIngredient
-    extra = 1
+    extra = 10
 
 
 @admin.register(Recipe)

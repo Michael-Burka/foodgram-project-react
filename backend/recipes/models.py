@@ -19,7 +19,7 @@ class Tag(models.Model):
     )
 
     class Meta:
-        ordering = ("-id",)
+        ordering = ("id",)
         verbose_name = "Tag"
         verbose_name_plural = "Tags"
 
@@ -109,7 +109,10 @@ class RecipeIngredient(models.Model):
         verbose_name_plural = "Recipe Ingredients"
 
     def __str__(self):
-        return f"{self.ingredient.name} in {self.recipe.name}"
+        return (
+                f"{self.ingredient.name} ({self.ingredient.measurement_unit})"
+                f" in {self.recipe.name}"
+        )
 
 
 class Favorite(models.Model):

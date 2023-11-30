@@ -2,41 +2,25 @@
     {
         "model": "recipes.tag",
         "fields": {
-            "name": "Dairy Free",
-            "color": "#FF69B4",
-            "slug": "dairy-free"
+            "name": "Завтрак",
+            "color": "#FFD700",
+            "slug": "breakfast"
         }
     },
     {
         "model": "recipes.tag",
         "fields": {
-            "name": "High Protein",
-            "color": "#8A2BE2",
-            "slug": "high-protein"
+            "name": "Обед",
+            "color": "#FF4500",
+            "slug": "lunch"
         }
     },
     {
         "model": "recipes.tag",
         "fields": {
-            "name": "Paleo",
-            "color": "#A52A2A",
-            "slug": "paleo"
-        }
-    },
-    {
-        "model": "recipes.tag",
-        "fields": {
-            "name": "Keto",
-            "color": "#FF8C00",
-            "slug": "keto"
-        }
-    },
-    {
-        "model": "recipes.tag",
-        "fields": {
-            "name": "Vegetarian",
-            "color": "#6B8E23",
-            "slug": "vegetarian"
+            "name": "Ужин",
+            "color": "#20B2AA",
+            "slug": "dinner"
         }
     }
 ]
