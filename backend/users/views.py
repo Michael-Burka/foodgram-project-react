@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
@@ -6,9 +6,10 @@ from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import (BasePermission, IsAuthenticated,
+from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from rest_framework.request import Request
 
 from foodgram_api.pagination import CustomPageNumberPagination
 from users.models import Subscription
@@ -31,22 +32,41 @@ class CustomUserViewSet(UserViewSet):
         serializer_class (CustomUserSerializer): Serializer for user data.
         pagination_class (CustomPageNumberPagination): Pagination class.
     """
+
     queryset = User.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = CustomUserSerializer
     pagination_class = CustomPageNumberPagination
     serializer_class = CustomUserSerializer
 
-    def get_permissions(self) -> List[BasePermission]:
+    @action(
+        methods=['GET'],
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def me(
+        self, request: Request, pk: Optional[int] = None
+    ) -> Response:
         """
-        Get permissions for the viewset.
+        Retrieve the profile information of the currently authenticated user.
+
+        Args:
+            request (Request): The request object.
+            pk (int, optional): Primary key of the user.
+            Not used in this method. Defaults to None.
 
         Returns:
-            List[BasePermission]: A list of permission instances.
+            Response:
+                The response object containing user information
+                if authenticated, otherwise a 401 Unauthorized response.
         """
-        if self.action == "me":
-            return [IsAuthenticated()]
-        return super().get_permissions()
+
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        serializer = CustomUserSerializer(
+            request.user, context={'request': request}
+        )
+        return Response(serializer.data)
 
     @action(
         methods=["POST"],
@@ -66,6 +86,7 @@ class CustomUserViewSet(UserViewSet):
         Returns:
             Response: The response object.
         """
+
         user = self.request.user
         serializer = PasswordSerializer(
             data=request.data, context={"request": request})
@@ -97,12 +118,14 @@ class CustomUserViewSet(UserViewSet):
         Returns:
             Response: The paginated response object.
         """
+
         user = request.user
         queryset = User.objects.filter(authors__user=user)
         pages = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
             pages, many=True, context={"request": request}
         )
+
         return self.get_paginated_response(serializer.data)
 
     @action(

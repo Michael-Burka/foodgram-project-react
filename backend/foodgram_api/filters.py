@@ -20,7 +20,16 @@ class IngredientSearchFilter(SearchFilter):
 class RecipesFilter(FilterSet):
     """
     Custom filter set for filtering recipes.
-    Supports filtering by tags, author, is_favorited, and is_in_shopping_cart.
+    Supports filtering by tags, is_favorited, and is_in_shopping_cart.
+
+    Attributes:
+        tags (AllValuesMultipleFilter):
+            Filter to apply on tags using their slugs.
+        is_favorited (BooleanFilter):
+            Filter to check if a recipe is favorited by the current user.
+        is_in_shopping_cart (BooleanFilter):
+            Filter to check if a recipe is
+            in the shopping cart of the current user.
     """
 
     tags = filters.AllValuesMultipleFilter(field_name="tags__slug")
@@ -38,6 +47,14 @@ class RecipesFilter(FilterSet):
     ) -> QuerySet:
         """
         Filter the queryset by whether a recipe is favorited by the user.
+
+        Args:
+            queryset (QuerySet): The initial queryset.
+            name (str): The name of the filter.
+            value (bool): The value to filter by.
+
+        Returns:
+            QuerySet: The filtered queryset.
         """
 
         if value and not self.request.user.is_anonymous:
@@ -49,6 +66,14 @@ class RecipesFilter(FilterSet):
     ) -> QuerySet:
         """
         Filter the queryset by whether a recipe is in the user's shopping cart.
+
+        Args:
+            queryset (QuerySet): The initial queryset.
+            name (str): The name of the filter.
+            value (bool): The value to filter by.
+
+        Returns:
+            QuerySet: The filtered queryset.
         """
 
         if value and not self.request.user.is_anonymous:

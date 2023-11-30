@@ -7,16 +7,29 @@ from rest_framework.views import APIView
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
-    Custom permission to only allow owners of an object to edit it.
-    Assumes the model instance has an 'author' attribute.
+    Custom permission class that allows object modification only
+    if the request user is the owner of the object
+    or a superuser. Read-only access is allowed for all users.
+
+    This permission assumes that the object has an 'author'
+    attribute to identify the owner.
     """
 
     def has_object_permission(
         self, request: Request, view: APIView, obj: Any
     ) -> bool:
         """
-        Return True if permission is granted, False otherwise.
+        Determine if the request should be permitted.
+
+        Args:
+            request (Request): The incoming request object.
+            view (APIView): The view that is handling the request.
+            obj (Any): The object being accessed or modified.
+
+        Returns:
+            bool: True if the request is permitted, False otherwise.
         """
+
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_authenticated
@@ -27,15 +40,27 @@ class IsAdminOrReadOnly(permissions.BasePermission):
 
 class IsOwnerOrAdminOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
     """
-    Custom permission to only allow owners of an object or admin to edit it.
-    Assumes the model instance has an 'author' attribute.
+    Custom permission class that allows object modification
+    only if the request user is the owner of the object
+    or a superuser. Read-only access is allowed for authenticated users.
+
+    This permission assumes that the object
+    has an 'author' attribute to identify the owner.
     """
 
     def has_object_permission(
         self, request: Request, view: APIView, obj: Any
     ) -> bool:
         """
-        Return True if permission is granted, False otherwise.
+        Determine if the request should be permitted.
+
+        Args:
+            request (Request): The incoming request object.
+            view (APIView): The view that is handling the request.
+            obj (Any): The object being accessed or modified.
+
+        Returns:
+            bool: True if the request is permitted, False otherwise.
         """
 
         return (

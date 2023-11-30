@@ -101,6 +101,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             The serializer class, either `RecipeSerializer`
             or `CreateRecipeSerializer`.
         """
+
         if self.request.method == "GET":
             return RecipeSerializer
         return CreateRecipeSerializer
@@ -113,6 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             A dictionary containing the context for the serializer,
             including the request.
         """
+
         context = super().get_serializer_context()
         context.update({"request": self.request})
         return context
@@ -136,6 +138,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Returns:
             The HTTP response object.
         """
+
         try:
             recipe = Recipe.objects.get(id=pk)
         except Recipe.DoesNotExist:
@@ -193,6 +196,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Returns:
             The HTTP response object.
         """
+
         return self.__favorite_list(request, pk, Favorite)
 
     @action(
@@ -211,6 +215,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Returns:
             The HTTP response object.
         """
+
         return self.__favorite_list(
             request=request, list_model=ShoppingCart, pk=pk)
 
@@ -229,6 +234,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         Returns:
             An HttpResponse containing the Excel file.
         """
+
         shopping_cart_items = ShoppingCart.objects.filter(user=request.user)
         ingredients = (
             RecipeIngredient.objects.filter(

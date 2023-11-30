@@ -8,6 +8,7 @@ class RecipeTagInline(admin.TabularInline):
     """
     Inline admin for displaying RecipeTag within the Recipe admin page.
     """
+
     model = RecipeTag
     extra = 1
 
@@ -16,6 +17,7 @@ class RecipeIngredientInline(admin.TabularInline):
     """
     Inline admin for displaying RecipeIngredient within the Recipe admin page.
     """
+
     model = RecipeIngredient
     extra = 1
 
@@ -25,6 +27,7 @@ class RecipeAdmin(admin.ModelAdmin):
     """
     Admin interface for Recipe model.
     """
+
     list_display = ["id", "name", "author", "favorites_count"]
     search_fields = ["name", "author__username", "tags__name"]
     list_filter = ["tags", "author", "pub_date"]
@@ -50,6 +53,7 @@ class TagAdmin(admin.ModelAdmin):
     """
     Admin interface for Tag model.
     """
+
     list_display = ("name", "slug", "color")
 
 
@@ -58,6 +62,7 @@ class IngredientAdmin(admin.ModelAdmin):
     """
     Admin interface for Ingredient model.
     """
+
     list_display = ("name", "measurement_unit")
     search_fields = ["name"]
 
@@ -67,6 +72,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     """
     Admin interface for Favorite model.
     """
+
     list_display = ("user", "recipe")
     list_filter = ("user", "recipe")
 
@@ -76,5 +82,6 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     """
     Admin interface for ShoppingCart model.
     """
+
     list_display = ("user", "recipe", "added_at")
     list_filter = ("user", "recipe")
