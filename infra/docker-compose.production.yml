@@ -30,6 +30,9 @@ services:
       - ../.env
 
   frontend:
+    depends_on:
+      - db
+      - backend
     image: michaelburka/foodgram_frontend:latest
     build: ../frontend
     container_name: foodgram-front

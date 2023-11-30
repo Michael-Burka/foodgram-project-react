@@ -17,7 +17,7 @@ services:
       - ../.env
 
   backend:
-    container_name: foodgram-app
+    container_name: foodgram-backend
     # image: michaelburka/foodgram_backend:latest
     build: ../backend
     restart: always
@@ -28,7 +28,7 @@ services:
       - ../.env
 
   frontend:
-    container_name: foodgram-front
+    container_name: foodgram-frontend
       # image: michaelburka/foodgram_frontend:latest
     build: ../frontend
     volumes:
